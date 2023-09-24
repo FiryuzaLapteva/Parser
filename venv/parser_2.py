@@ -22,7 +22,7 @@ for page_number in range(1, num_pages + 1):
     all_article_titles.extend(article_titles)
 
 # Save all the article titles to a JSON file
-with open('file.json', 'w', encoding='utf-8') as file:
+with open('file_parser_2.json', 'w', encoding='utf-8') as file:
     json.dump(all_article_titles, file, ensure_ascii=False, indent=4)
 
 print(f"Scraped {len(all_article_titles)} article titles from {num_pages} pages.")
