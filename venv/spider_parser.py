@@ -18,8 +18,12 @@ def url_mod(input_file_path, output_file_path):
 
 #print(f"URLs have been modified and saved to {output_file_path}.")
 
+<<<<<<< HEAD
 url_mod('ru.txt', 'modified_urls.txt')
 
+=======
+url_mod('urls.txt', 'modified_urls.txt')
+>>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
 # Чтение URL адресов из файла
 with open('modified_urls.txt', 'r', encoding='utf-8') as file:
     urls = [line.strip() for line in file]
@@ -30,7 +34,11 @@ class Parser(threading.Thread):
 
     def __init__(self, url, lock):
         threading.Thread.__init__(self)
+<<<<<<< HEAD
         self.url = url[:1000]
+=======
+        self.url = url
+>>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
         self.lock = lock
 
     def run(self):
@@ -57,7 +65,11 @@ header = ['url', 'content']
 
 # Откройте CSV-файл в режиме записи и запишите заголовок
 with open('parsed_data.csv', mode='w', newline='', encoding='utf-8') as file:
+<<<<<<< HEAD
     csv_writer = csv.writer(file, quotechar='', quoting=csv.QUOTE_NONE)
+=======
+    csv_writer = csv.writer(file)
+>>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
     csv_writer.writerow(header)
           
 # Создаем объект блокировки
