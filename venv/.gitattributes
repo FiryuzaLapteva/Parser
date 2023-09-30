@@ -1,2 +1,0 @@
-ru.txt filter=lfs diff=lfs merge=lfs -text
-modified_urls.txt filter=lfs diff=lfs merge=lfs -text
