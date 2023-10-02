@@ -1,8 +1,8 @@
 import threading
 import requests
 from bs4 import BeautifulSoup
-import json
 import csv
+import re
 
 def url_mod(input_file_path, output_file_path):
 
@@ -12,18 +12,11 @@ def url_mod(input_file_path, output_file_path):
         for line in input_file:
         # Добавляем "https://" в начале каждой строчки
             modified_line = 'https://' + line.strip()
-
         # записываем изменения в modified_line
             output_file.write(modified_line + '\n')
 
-#print(f"URLs have been modified and saved to {output_file_path}.")
+#url_mod('ru.txt', 'modified_urls.txt')
 
-<<<<<<< HEAD
-url_mod('ru.txt', 'modified_urls.txt')
-
-=======
-url_mod('urls.txt', 'modified_urls.txt')
->>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
 # Чтение URL адресов из файла
 with open('modified_urls.txt', 'r', encoding='utf-8') as file:
     urls = [line.strip() for line in file]
@@ -31,30 +24,37 @@ with open('modified_urls.txt', 'r', encoding='utf-8') as file:
 
 class Parser(threading.Thread):
    # Класс парсера
-
     def __init__(self, url, lock):
         threading.Thread.__init__(self)
-<<<<<<< HEAD
-        self.url = url[:1000]
-=======
         self.url = url
->>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
         self.lock = lock
 
     def run(self):
         try:
             response = requests.get(self.url)
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                soup = soup.find_all('h1')
+                content = response.content.decode('utf-8') 
+                russian_pattern = re.compile(r'[а-яА-ЯёЁ]+')# оставляем только русские симловы
+                russian_words = russian_pattern.findall(content)# Применяем фильтрацию по русским словам к контенту
+                russian_text = ' '.join(russian_words) # объединяем слова через пробел
+            # Пройтись по распарсенным данным и записать каждую строку
+                with self.lock:
+                    with open('parsed_data.csv', mode='a', newline='', encoding='utf-8') as file:
+                        csv_writer = csv.writer(file)
+                        csv_writer.writerow([self.url, russian_text])
+                #soup = BeautifulSoup(content, 'html.parser')
+                #soup = BeautifulSoup(response.text, 'html.parser')
+                #soup = soup.find_all('h1')
+                '''
+                h1_tags = soup.find_all('h1') 
                 print(f'Запрос выполнен успешно для URL: {self.url}')
-                spider_file = 'parsed_data.csv'
-                with open(spider_file, mode='a', newline='', encoding='utf-8') as file:
-                    csv_writer = csv.writer(file)
+                with open('parsed_data.csv', mode='a', newline='', encoding='utf-8') as file:
+                    csv_writer = csv.writer(file,  quotechar='', quoting=csv.QUOTE_NONE)
                     # Пройтись по распарсенным данным и записать каждую строку
-                    for h1 in soup:
+                    for h1 in h1_tags:
                         row = [self.url, h1.text]  # Определить данные для каждой строки
                         csv_writer.writerow(row)
+                        '''
             else:
                 print(f'Произошла ошибка при выполнении запроса для URL: {self.url}')
         except requests.exceptions.RequestException as e:
@@ -65,11 +65,7 @@ header = ['url', 'content']
 
 # Откройте CSV-файл в режиме записи и запишите заголовок
 with open('parsed_data.csv', mode='w', newline='', encoding='utf-8') as file:
-<<<<<<< HEAD
     csv_writer = csv.writer(file, quotechar='', quoting=csv.QUOTE_NONE)
-=======
-    csv_writer = csv.writer(file)
->>>>>>> 2a78b2ea1f65316b86af7b30de8ffa27a6087667
     csv_writer.writerow(header)
           
 # Создаем объект блокировки
@@ -77,7 +73,7 @@ lock = threading.Lock()
 
 # Создаем и запускаем обработчики
 threads = []
-for url in urls:
+for url in urls[:1000]:
     parser = Parser(url, lock)
     parser.start()
     threads.append(parser)
@@ -85,3 +81,6 @@ for url in urls:
 # Ожидаем завершения всех обработчиков
 for parser in threads:
     parser.join()
+
+
+
